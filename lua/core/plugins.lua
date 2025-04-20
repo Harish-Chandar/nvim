@@ -56,5 +56,31 @@ require("lazy").setup({
       -- "3rd/image.nvim", -- Optional, if you ever want preview image support
     },
   },
+  -- Comment
+  {
+	"numToStr/Comment.nvim",
+	opts = {}
+  },
+  -- LSP
+  {
+	"neovim/nvim-lspconfig",
+	tag = 'v1.0.0',
+	config = function()
+		require('lspconfig').pyright.setup{}  
+		require'lspconfig'.ts_ls.setup{
+    		on_attach = function(client, bufnr)
+				-- go to definition and rename
+				vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
+				vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.rename()<CR>', { noremap = true, silent = true })
+
+				-- autocompletes
+				vim.api.nvim_buf_set_keymap(bufnr, 'i', '<Tab>', 'v:lua.vim.lsp.omnifunc', { expr = true, noremap = true })
+			end
+		}
+	end
+  },
+  'hrsh7th/nvim-cmp',  -- nvim-cmp plugin
+  'hrsh7th/cmp-nvim-lsp',  -- LSP completion source for nvim-cmp
+
 })
 
