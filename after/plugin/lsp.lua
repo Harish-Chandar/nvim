@@ -4,7 +4,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     -- Enable virtual text (message after the box)
     virtual_text = {
       -- Display the message as text (after the box)
-      prefix = " ",  -- Symbol before the error message (could be empty or a symbol)
+      prefix = " ",  -- Symbol before the error message 
       spacing = 4,  -- Space between the box and the message
     },
     -- Show signs in the sign column

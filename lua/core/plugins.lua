@@ -75,7 +75,9 @@ require("lazy").setup({
 
 				-- autocompletes
 				vim.api.nvim_buf_set_keymap(bufnr, 'i', '<Tab>', 'v:lua.vim.lsp.omnifunc', { expr = true, noremap = true })
-			end
+		end,
+		filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+		cmd = { "typescript-language-server", "--stdio" }
 		}
 	end
   },
