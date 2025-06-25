@@ -61,12 +61,20 @@ require("lazy").setup({
 	"numToStr/Comment.nvim",
 	opts = {}
   },
+  -- Git Merge Conflicts
+  {
+    'akinsho/git-conflict.nvim',
+	version = "*",
+	default_mappings = false,
+	config = true
+  },
   -- LSP
   {
 	"neovim/nvim-lspconfig",
 	tag = 'v1.0.0',
 	config = function()
 		require('lspconfig').pyright.setup{}  
+
 		require'lspconfig'.ts_ls.setup{
     		on_attach = function(client, bufnr)
 				-- go to definition and rename
@@ -75,10 +83,17 @@ require("lazy").setup({
 
 				-- autocompletes
 				vim.api.nvim_buf_set_keymap(bufnr, 'i', '<Tab>', 'v:lua.vim.lsp.omnifunc', { expr = true, noremap = true })
-		end,
-		filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
-		cmd = { "typescript-language-server", "--stdio" }
+			end,
+			filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+			cmd = { "typescript-language-server", "--stdio" }
 		}
+
+		require('lspconfig').biome.setup{
+			on_attach = your_on_attach_fn,
+			filetypes = { "javascript", "javascriptreact", "javascript.jsx" },
+			cmd = { "biome", "lsp-proxy" },
+			root_dir = require('lspconfig.util').root_pattern(".biome.json", "biome.json", "package.json", ".git")
+	    }
 	end
   },
   'hrsh7th/nvim-cmp',  -- nvim-cmp plugin
