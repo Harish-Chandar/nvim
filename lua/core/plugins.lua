@@ -93,11 +93,21 @@ require("lazy").setup({
 			filetypes = { "javascript", "javascriptreact", "javascript.jsx" },
 			cmd = { "biome", "lsp-proxy" },
 			root_dir = require('lspconfig.util').root_pattern(".biome.json", "biome.json", "package.json", ".git")
-	    }
+		}
+
+		require('lspconfig').intelephense.setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
+			filetypes = { "php" },
+			cmd = { "intelephense", "--stdio" },
+			root_dir = require('lspconfig.util').root_pattern("composer.json", ".git"),
+		}
 	end
   },
   'hrsh7th/nvim-cmp',  -- nvim-cmp plugin
   'hrsh7th/cmp-nvim-lsp',  -- LSP completion source for nvim-cmp
+  'hrsh7th/cmp-path',      -- path completions
+  'hrsh7th/cmp-buffer',    -- buffer completions
 
 })
 
