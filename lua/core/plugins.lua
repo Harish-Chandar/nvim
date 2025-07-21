@@ -113,7 +113,12 @@ require("lazy").setup({
 	'hrsh7th/nvim-cmp',  -- nvim-cmp plugin
 	'hrsh7th/cmp-nvim-lsp',  -- LSP completion source for nvim-cmp
 	'hrsh7th/cmp-path',      -- path completions
-	'hrsh7th/cmp-buffer',    -- buffer completions
-
+	'hrsh7th/cmp-buffer',    -- buffer completions
+	-- GitHub Copilot
+	{
+		"github/copilot.vim",
+		version="1.51.0",
+		branch="release",
+	},
 })
 
