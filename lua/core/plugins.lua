@@ -88,7 +88,7 @@ require("lazy").setup({
 					vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.rename()<CR>', { noremap = true, silent = true })
 
 					-- autocompletes
-					vim.api.nvim_buf_set_keymap(bufnr, 'i', '<Tab>', 'v:lua.vim.lsp.omnifunc', { expr = true, noremap = true })
+					-- vim.api.nvim_buf_set_keymap(bufnr, 'i', '<Tab>', 'v:lua.vim.lsp.omnifunc', { expr = true, noremap = true })
 				end,
 				filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
 				cmd = { "typescript-language-server", "--stdio" }
