@@ -59,13 +59,38 @@ require("lazy").setup({
 	-- Comment
 	{
 		"numToStr/Comment.nvim",
-		opts = {}
+		opts = {},
 	},
 	-- Harpoon
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" },
+	},
+	-- Git signs
+	{
+		"lewis6991/gitsigns.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = {
+			signs = {
+				add = { text = "+" },
+				change = { text = "~" },
+				delete = { text = "_" },
+				topdelete = { text = "‾" },
+				changedelete = { text = "~" },
+			},
+			numhl = true,
+			linehl = false,
+			word_diff = false,
+			current_line_blame = true,
+			current_line_blame_opts = {
+				delay = 1000,
+			},
+		},
+	},
+	-- Fugitive
+	{
+		"tpope/vim-fugitive",
 	},
 	{
 		"neovim/nvim-lspconfig",
