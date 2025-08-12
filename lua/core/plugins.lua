@@ -134,7 +134,7 @@ require("lazy").setup({
 	-- GitHub Copilot
 	{
 		"github/copilot.vim",
-		version="1.51.0",
+		version="1.52.0",
 		branch="release",
 	},
 })
