@@ -18,3 +18,6 @@ vim.keymap.set("i", "<C-Del>", "<C-\\><C-O>dw", { noremap = true })
 vim.keymap.set('i', 'jk', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('v', 'jk', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('x', 'jk', '<Esc>', { noremap = true, silent = true })
+
+-- Project Manager
+vim.api.nvim_set_keymap("n", "<leader>p", ":ProjectMgr<CR>", {})

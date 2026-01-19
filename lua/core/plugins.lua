@@ -67,6 +67,10 @@ require("lazy").setup({
 		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
+	{
+		'charludo/projectmgr.nvim',
+		lazy = false, -- important!
+	},
 	-- Git signs
 	{
 		"lewis6991/gitsigns.nvim",
