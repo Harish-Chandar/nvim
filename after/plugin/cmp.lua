@@ -38,6 +38,7 @@ cmp.setup({
             if not dismiss_copilot() then
                 fallback()
             end
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-c>', true, true, true), 'n', true)
         end,
         ['<C-c>'] = function(fallback)
             if not dismiss_copilot() then
