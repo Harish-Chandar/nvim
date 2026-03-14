@@ -24,6 +24,12 @@ vim.opt.breakindent = true -- Enable break indent
 vim.opt.ignorecase = true  -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.smartcase = true
 
+vim.opt.signcolumn = "yes" -- Always show the sign column, otherwise it would shift the text each time diagnostics appear/become resolved
+
+vim.o.scrolloff = 4 -- Keep 8 lines above and below the cursor when scrolling
+
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- Clear search highlights when pressing Esc
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   pattern = "*",
   callback = function()

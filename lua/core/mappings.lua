@@ -1,6 +1,10 @@
 vim.g.mapleader = " "
 vim.keymap.set('n', '<leader>e', '<cmd>Neotree toggle<CR>', { noremap = true, silent = true })
 
+-- up and down to display lines
+vim.keymap.set('n', 'j', 'gj', { noremap = true, silent = true })
+vim.keymap.set('n', 'k', 'gk', { noremap = true, silent = true })
+
 -- Navigate to the previous/next buffer
 vim.keymap.set('n', '[b', '<cmd>bprevious<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', ']b', '<cmd>bnext<CR>', { noremap = true, silent = true })
@@ -17,3 +21,6 @@ vim.keymap.set("i", "<C-Del>", "<C-\\><C-O>dw", { noremap = true })
 
 -- Project Manager
 vim.api.nvim_set_keymap("n", "<leader>p", ":ProjectMgr<CR>", {})
+
+-- Fuzzy Find in current buffer with direction reversed
+vim.api.nvim_set_keymap("n", "<leader>/", ":lua require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({previewer = false}))<CR>", { noremap = true, silent = true })

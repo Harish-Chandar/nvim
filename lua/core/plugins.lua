@@ -61,6 +61,10 @@ require("lazy").setup({
 		"numToStr/Comment.nvim",
 		opts = {},
 	},
+	{
+		"Sargates/better-comments.nvim",
+    	opts = {},
+	},
 	-- Harpoon
 	{
 		"ThePrimeagen/harpoon",
@@ -95,6 +99,10 @@ require("lazy").setup({
 	-- Fugitive
 	{
 		"tpope/vim-fugitive",
+	},
+	-- Mini
+	{
+		"echasnovski/mini.nvim",
 	},
 	{
 		"neovim/nvim-lspconfig",

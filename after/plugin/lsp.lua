@@ -48,15 +48,18 @@ capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 -- this on_attach will be called for *every* LSP server you set up:
 local on_attach = function(client, bufnr)
 	local bufopts = { noremap=true, silent=true, buffer=bufnr }
+	local telescope_builtin = require("telescope.builtin")
 
 	-- go to definition
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+	vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, bufopts)
 	-- hover to show signature / docs / “definition”
 	vim.keymap.set("n", "vd", vim.lsp.buf.hover, bufopts)
 	-- rename symbol
 	vim.keymap.set("n", "vrn", vim.lsp.buf.rename, bufopts)
 	-- find references
-	vim.keymap.set("n", "vrr", vim.lsp.buf.references, bufopts)
+	vim.keymap.set("n", "vrr", telescope_builtin.lsp_references, bufopts)
+	-- document symbols (functions, variables, classes, etc.)
+	vim.keymap.set("n", "<leader>df", telescope_builtin.lsp_document_symbols, bufopts)
 
 	-- (you can of course add more here: e.g. vca for code action, etc.)
 end
