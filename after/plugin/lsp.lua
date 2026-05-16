@@ -23,13 +23,11 @@ local on_attach = function(client, bufnr)
 
 end
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-vim.lsp.handlers["textDocument/publishDiagnostics"], {
-	virtual_text = { prefix = " ", spacing = 4 },
+vim.diagnostic.config({
+	virtual_text = { prefix = " ", spacing = 4 },
 	signs      = true,
 	float      = { source = "always" },
-}
-)
+})
 
 vim.api.nvim_set_keymap('n', '[d', '<Cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', ']d', '<Cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })

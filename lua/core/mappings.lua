@@ -28,3 +28,10 @@ vim.api.nvim_set_keymap("n", "<leader>/", ":lua require('telescope.builtin').cur
 -- dap config
 vim.keymap.set('n', '<leader>db', function() require('dap').toggle_breakpoint() end, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>dr', function() require('dap').continue() end, { noremap = true, silent = true })
+
+-- Remove trailing ^M (carriage return) from all lines
+vim.keymap.set('n', '<leader>rc', function()
+	local pos = vim.fn.getpos('.')
+	vim.cmd('silent! %s/\r$//e')
+	vim.fn.setpos('.', pos)
+end, { noremap = true, silent = true, desc = "Remove trailing ^M" })
