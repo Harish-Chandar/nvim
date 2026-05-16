@@ -22,6 +22,8 @@ require("lazy").setup({
 	-- Treesitter
 	{
 		"nvim-treesitter/nvim-treesitter",
+		lazy = false,
+		branch = "master",
 		build = ":TSUpdate"
 	},
 
@@ -108,36 +110,46 @@ require("lazy").setup({
 		"neovim/nvim-lspconfig",
 		tag = 'v1.0.0',
 		config = function()
-			-- require('lspconfig').pyright.setup{}  
-			--
-			-- require'lspconfig'.ts_ls.setup{
-			-- 	on_attach = function(client, bufnr)
-			-- 		-- go to definition and rename
-			-- 		vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true })
-			-- 		vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>gr', '<Cmd>lua vim.lsp.buf.rename()<CR>', { noremap = true, silent = true })
-			--
-			-- 		-- autocompletes
-			-- 		-- vim.api.nvim_buf_set_keymap(bufnr, 'i', '<Tab>', 'v:lua.vim.lsp.omnifunc', { expr = true, noremap = true })
-			-- 	end,
-			-- 	filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
-			-- 	cmd = { "typescript-language-server", "--stdio" }
-			-- }
-			--
-			-- require('lspconfig').biome.setup{
-			-- 	on_attach = your_on_attach_fn,
-			-- 	filetypes = { "javascript", "javascriptreact", "javascript.jsx" },
-			-- 	cmd = { "biome", "lsp-proxy" },
-			-- 	root_dir = require('lspconfig.util').root_pattern(".biome.json", "biome.json", "package.json", ".git")
-			-- }
-			--
-			-- require('lspconfig').intelephense.setup{
-			-- 	on_attach = on_attach,
-			-- 	capabilities = capabilities,
-			-- 	filetypes = { "php" },
-			-- 	cmd = { "intelephense", "--stdio" },
-			-- 	root_dir = require('lspconfig.util').root_pattern("composer.json", ".git"),
-			-- }
 		end
+	},
+	-- Mason (LSP installer) and mason-lspconfig bridge
+	{
+		"williamboman/mason.nvim",
+		build = ":MasonUpdate",
+	},
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+	},
+	{
+		"mfussenegger/nvim-dap",
+	},
+	{ "nvim-neotest/nvim-nio" },
+	{
+		"jay-babu/mason-nvim-dap.nvim",
+		event = "VeryLazy",
+		dependencies = { "williamboman/mason.nvim", "mfussenegger/nvim-dap" },
+		opts = {
+			handlers = {},
+		},
+	},
+	{
+		"rcarriga/nvim-dap-ui",
+		event = "VeryLazy",
+		dependencies = { "mfussenegger/nvim-dap" },
+		config = function()
+			local dap, dapui = require("dap"), require("dapui")
+			dapui.setup()
+			dap.listeners.after.event_initialized["dapui_config"] = function()
+				dapui.open()
+			end
+			dap.listeners.before.event_terminated["dapui_config"] = function()
+				dapui.close()
+			end
+			dap.listeners.before.event_exited["dapui_config"] = function()
+				dapui.close()
+			end
+		end,
 	},
 	'hrsh7th/nvim-cmp',  -- nvim-cmp plugin
 	'hrsh7th/cmp-nvim-lsp',  -- LSP completion source for nvim-cmp

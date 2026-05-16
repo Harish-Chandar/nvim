@@ -1,42 +1,3 @@
--- -- Set up LSP diagnostics with colored boxes
--- vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
---   vim.lsp.handlers["textDocument/publishDiagnostics"], {
---     -- Enable virtual text (message after the box)
---     virtual_text = {
---       -- Display the message as text (after the box)
---       prefix = " ",  -- Symbol before the error message 
---       spacing = 4,  -- Space between the box and the message
---     },
---     -- Show signs in the sign column
---     signs = true,
---     -- Show floating window when hovering
---     float = {
---       source = "always",  -- Show source (e.g., "tsserver") in the floating window
---     },
---   }
--- )
---
--- -- Configure diagnostic signs for errors, warnings, etc.
--- vim.fn.sign_define("LspDiagnosticsSignError", { text = "● ", texthl = "LspDiagnosticsDefaultError", linehl = "", numhl = "" })
--- vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "● ", texthl = "LspDiagnosticsDefaultWarning", linehl = "", numhl = "" })
--- vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "● ", texthl = "LspDiagnosticsDefaultInformation", linehl = "", numhl = "" })
--- vim.fn.sign_define("LspDiagnosticsSignHint", { text = "● ", texthl = "LspDiagnosticsDefaultHint", linehl = "", numhl = "" })
---
--- -- Set up diagnostic highlight groups to display colored boxes and text
--- -- Red box for errors, yellow for warnings, blue for info, etc.
--- vim.cmd [[
---   highlight LspDiagnosticsDefaultError guibg=red guifg=white
---   highlight LspDiagnosticsDefaultWarning guibg=yellow guifg=black
---   highlight LspDiagnosticsDefaultInformation guibg=blue guifg=white
---   highlight LspDiagnosticsDefaultHint guibg=blue guifg=white
--- ]]
---
--- -- Add custom mappings for navigating diagnostics
--- vim.api.nvim_set_keymap('n', '[d', '<Cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', ']d', '<Cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<Leader>d', '<Cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
---
-
 -- after/plugin/lsp.lua
 
 -- nvim-cmp setup for LSP snippets/completion
@@ -45,7 +6,6 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 -- augments the capabilities object with nvim-cmp's defaults:
 capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 
--- this on_attach will be called for *every* LSP server you set up:
 local on_attach = function(client, bufnr)
 	local bufopts = { noremap=true, silent=true, buffer=bufnr }
 	local telescope_builtin = require("telescope.builtin")
@@ -61,10 +21,8 @@ local on_attach = function(client, bufnr)
 	-- document symbols (functions, variables, classes, etc.)
 	vim.keymap.set("n", "<leader>df", telescope_builtin.lsp_document_symbols, bufopts)
 
-	-- (you can of course add more here: e.g. vca for code action, etc.)
 end
 
--- diagnostics configuration (you already have this; just ensure it stays loaded)
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 vim.lsp.handlers["textDocument/publishDiagnostics"], {
 	virtual_text = { prefix = " ", spacing = 4 },
@@ -73,51 +31,146 @@ vim.lsp.handlers["textDocument/publishDiagnostics"], {
 }
 )
 
--- Add custom mappings for navigating diagnostics
 vim.api.nvim_set_keymap('n', '[d', '<Cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', ']d', '<Cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>d', '<Cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
 
--- Finally, set up each server with this shared on_attach+capabilities
 local lspconfig = require("lspconfig")
 
--- Python
-lspconfig.pyright.setup{
-	on_attach = on_attach,
-	capabilities = capabilities,
-}
+local has_mason, mason = pcall(require, "mason")
+local has_mason_lsp, mason_lspconfig = pcall(require, "mason-lspconfig")
+if has_mason and has_mason_lsp then
+	mason.setup()
+	local ok, err = pcall(function()
+		mason_lspconfig.setup()
+	end)
 
--- TypeScript
-local configs = require("lspconfig.configs")
-if not configs["ts-ls"] then
-	configs["ts-ls"] = {
-		default_config = {
-			cmd = { "typescript-language-server", "--stdio" },
-			filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
-			root_dir = require("lspconfig.util").root_pattern("tsconfig.json", "package.json", ".git"),
-			single_file_support = true,
+	local did_handlers = false
+	if type(mason_lspconfig.setup_handlers) == "function" then
+		did_handlers = true
+		mason_lspconfig.setup_handlers({
+		-- default handler (for most servers)
+		function(server_name)
+			require("lspconfig")[server_name].setup({
+				on_attach = on_attach,
+				capabilities = capabilities,
+			})
+		end,
+
+		-- Custom handler for tsserver to include JS filetypes and root detection
+		["tsserver"] = function()
+			lspconfig.tsserver.setup{
+				on_attach = on_attach,
+				capabilities = capabilities,
+				filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact", "javascript.jsx" },
+				root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", ".git"),
+			}
+		end,
+
+		-- Custom handler for intelephense to preserve your root_dir rule
+		["intelephense"] = function()
+			lspconfig.intelephense.setup{
+				on_attach = on_attach,
+				capabilities = capabilities,
+				root_dir = lspconfig.util.root_pattern("composer.json", ".git", ".gitignore"),
+			}
+		end,
+		-- Custom handler for clangd (C/C++) with recommended flags
+		["clangd"] = function()
+			lspconfig.clangd.setup{
+				on_attach = on_attach,
+				capabilities = capabilities,
+				cmd = { "clangd", "--background-index", "--clang-tidy" },
+				filetypes = { "c", "cpp", "objc", "objcpp" },
+				root_dir = lspconfig.util.root_pattern("compile_commands.json", ".clangd", ".git"),
+			}
+		end,
+	})
+	end
+
+	if not did_handlers then
+		lspconfig.pyright.setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
 		}
+
+		local configs = require("lspconfig.configs")
+		if not configs["ts-ls"] then
+			configs["ts-ls"] = {
+				default_config = {
+					cmd = { "typescript-language-server", "--stdio" },
+					filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+					root_dir = require("lspconfig.util").root_pattern("tsconfig.json", "package.json", ".git"),
+					single_file_support = true,
+				}
+			}
+		end
+
+		lspconfig["ts-ls"].setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
+			cmd = { "typescript-language-server", "--stdio" },
+			filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact", "javascript.jsx" },
+			root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", ".git"),
+		}
+
+		lspconfig.biome.setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
+			root_dir = lspconfig.util.root_pattern(".biome.json", "package.json", ".git"),
+		}
+
+		lspconfig.intelephense.setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
+			root_dir = lspconfig.util.root_pattern("composer.json", ".git", ".gitignore"),
+		}
+
+		-- Fallback clangd setup
+		lspconfig.clangd.setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
+			cmd = { "clangd", "--background-index", "--clang-tidy" },
+			filetypes = { "c", "cpp", "objc", "objcpp" },
+			root_dir = lspconfig.util.root_pattern("compile_commands.json", ".clangd", ".git"),
+		}
+	end
+else
+	-- Fallback: if Mason isn't available, set up servers manually as before
+	lspconfig.pyright.setup{
+		on_attach = on_attach,
+		capabilities = capabilities,
+	}
+
+	local configs = require("lspconfig.configs")
+	if not configs["ts-ls"] then
+		configs["ts-ls"] = {
+			default_config = {
+				cmd = { "typescript-language-server", "--stdio" },
+				filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+				root_dir = require("lspconfig.util").root_pattern("tsconfig.json", "package.json", ".git"),
+				single_file_support = true,
+			}
+		}
+	end
+
+	lspconfig["ts-ls"].setup{
+		on_attach = on_attach,
+		capabilities = capabilities,
+		cmd = { "typescript-language-server", "--stdio" },
+		filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact", "javascript.jsx" },
+		root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", ".git"),
+	}
+
+	lspconfig.biome.setup{
+		on_attach = on_attach,
+		capabilities = capabilities,
+		root_dir = lspconfig.util.root_pattern(".biome.json", "package.json", ".git"),
+	}
+
+	lspconfig.intelephense.setup{
+		on_attach = on_attach,
+		capabilities = capabilities,
+		root_dir = lspconfig.util.root_pattern("composer.json", ".git", ".gitignore"),
 	}
 end
-
-lspconfig["ts-ls"].setup{
-	on_attach = on_attach,
-	capabilities = capabilities,
-	cmd = { "typescript-language-server", "--stdio" },
-	filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact", "javascript.jsx" },
-	root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", ".git"),
-}
-
--- Biome (JavaScript)
-lspconfig.biome.setup{
-	on_attach = on_attach,
-	capabilities = capabilities,
-	root_dir = lspconfig.util.root_pattern(".biome.json", "package.json", ".git"),
-}
-
--- PHP
-lspconfig.intelephense.setup{
-	on_attach = on_attach,
-	capabilities = capabilities,
-	root_dir = lspconfig.util.root_pattern("composer.json", ".git"),
-}

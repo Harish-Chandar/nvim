@@ -24,3 +24,7 @@ vim.api.nvim_set_keymap("n", "<leader>p", ":ProjectMgr<CR>", {})
 
 -- Fuzzy Find in current buffer with direction reversed
 vim.api.nvim_set_keymap("n", "<leader>/", ":lua require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({previewer = false}))<CR>", { noremap = true, silent = true })
+
+-- dap config
+vim.keymap.set('n', '<leader>db', function() require('dap').toggle_breakpoint() end, { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>dr', function() require('dap').continue() end, { noremap = true, silent = true })

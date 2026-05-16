@@ -51,9 +51,9 @@ cmp.setup({
             end
         end,
 
-        ['<Tab>'] = function(fallback)
+        ['<C-y>'] = function(fallback)
             ------------------------------------------------------------------
-            -- 1. Try Copilot: if a suggestion is available, accept it
+            -- Accept Copilot suggestion if available
             ------------------------------------------------------------------
             if vim.fn.exists("*copilot#Accept") == 1 then
                 local ok, copilot_keys = pcall(vim.fn['copilot#Accept'], '')
@@ -62,9 +62,12 @@ cmp.setup({
                     return
                 end
             end
+            fallback()
+        end,
 
+        ['<Tab>'] = function(fallback)
             ------------------------------------------------------------------
-            -- 2. If cmp menu is visible, move to the next item
+            -- If cmp menu is visible, move to the next item
             ------------------------------------------------------------------
             if cmp.visible() then
                 cmp.select_next_item()
