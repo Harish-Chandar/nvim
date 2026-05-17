@@ -38,3 +38,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight text on yank",
 })
 
+vim.opt.spell = true
+vim.opt.spelllang = "en"
+
