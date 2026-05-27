@@ -47,6 +47,12 @@ require("lazy").setup({
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
 
+	--image
+	{
+		"3rd/image.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+	},
+
 	-- Neo-tree
 	{
 		"nvim-neo-tree/neo-tree.nvim",
@@ -55,9 +61,10 @@ require("lazy").setup({
 			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons",
 			"MunifTanjim/nui.nvim",
-			-- "3rd/image.nvim", -- Optional, if you ever want preview image support
+			"3rd/image.nvim", -- Optional, if you ever want preview image support
 		},
 	},
+
 	-- Comment
 	{
 		"numToStr/Comment.nvim",
@@ -160,6 +167,86 @@ require("lazy").setup({
 		"github/copilot.vim",
 		version="1.52.0",
 		branch="release",
+	},
+	{
+		"folke/sidekick.nvim",
+		opts = {
+			nes = {
+				enabled = false,
+			},
+		},
+		keys = {
+			{
+				"<c-.>",
+				function()
+					require("sidekick.cli").focus()
+				end,
+				desc = "Sidekick Focus",
+				mode = { "n", "t", "i", "x" },
+			},
+			{
+				"<leader>aa",
+				function()
+					require("sidekick.cli").toggle()
+				end,
+				desc = "Sidekick Toggle CLI",
+			},
+			{
+				"<leader>as",
+				function()
+					require("sidekick.cli").select()
+				end,
+				-- Or to select only installed tools:
+				-- require("sidekick.cli").select({ filter = { installed = true } })
+				desc = "Select CLI",
+			},
+			{
+				"<leader>ad",
+				function()
+					require("sidekick.cli").close()
+				end,
+				desc = "Detach a CLI Session",
+			},
+			{
+				"<leader>at",
+				function()
+					require("sidekick.cli").send({ msg = "{this}" })
+				end,
+				mode = { "x", "n" },
+				desc = "Send This",
+			},
+			{
+				"<leader>af",
+				function()
+					require("sidekick.cli").send({ msg = "{file}" })
+				end,
+				desc = "Send File",
+			},
+			{
+				"<leader>av",
+				function()
+					require("sidekick.cli").send({ msg = "{selection}" })
+				end,
+				mode = { "x" },
+				desc = "Send Visual Selection",
+			},
+			{
+				"<leader>ap",
+				function()
+					require("sidekick.cli").prompt()
+				end,
+				mode = { "n", "x" },
+				desc = "Sidekick Select Prompt",
+			},
+			-- Example of a keybinding to open Copilot directly
+			{
+				"<leader>ac",
+				function()
+					require("sidekick.cli").toggle({ name = "copilot", focus = true })
+				end,
+				desc = "Sidekick Toggle Copilot",
+			},
+		},
 	},
 })
 
