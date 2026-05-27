@@ -12,7 +12,14 @@ require('mini.indentscope').setup({
 })
 
 -- mini.move - Move selections with arrow keys or Alt+hjkl
-require('mini.move').setup()
+require('mini.move').setup({
+	mappings = {
+		line_down = "",
+		line_up = "",
+		line_left = "",
+		line_right = "",
+	},
+})
 
 -- mini.pairs - Autopairs
 require('mini.pairs').setup()
