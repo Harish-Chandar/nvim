@@ -22,7 +22,7 @@ require("lazy").setup({
 	-- Treesitter
 	{
 		"nvim-treesitter/nvim-treesitter",
-		lazy = false,
+		event = {"BufReadPost", "BufNewFile"},
 		branch = "master",
 		build = ":TSUpdate"
 	},
@@ -30,8 +30,51 @@ require("lazy").setup({
 	-- Telescope
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.8",
 		dependencies = { "nvim-lua/plenary.nvim" },
+
+		keys = {
+			{
+				"<leader> ",
+				function()
+					require("telescope.builtin").find_files()
+				end,
+				desc = "Find files",
+			},
+			{
+				"<leader>ff",
+				function()
+					require("telescope.builtin").find_files({
+						find_command = { "git", "ls-files", "--others", "--ignored", "--exclude-standard" },
+					})
+				end,
+				desc = "Git files",
+			},
+			{
+				"<leader>fg",
+				function()
+					require("telescope.builtin").live_grep()
+				end,
+				desc = "Live grep",
+			},
+			{
+				"<leader>fb",
+				function()
+					require("telescope.builtin").buffers()
+				end,
+				desc = "Buffers",
+			},
+			{
+				"<leader>fh",
+				function()
+					require("telescope.builtin").help_tags()
+				end,
+				desc = "Help",
+			},
+		},
+
+		config = function()
+			require("telescope").setup({})
+		end,
 	},
 
 	-- Bufferline
@@ -57,6 +100,13 @@ require("lazy").setup({
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
+		cmd = "Neotree",
+		keys = {
+			{ "<leader>e", "<cmd>Neotree toggle<CR>" },
+		},
+		config = function()
+			require("neo-tree").setup({})
+		end,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons",
@@ -123,6 +173,11 @@ require("lazy").setup({
 	{
 		"williamboman/mason.nvim",
 		build = ":MasonUpdate",
+		cmd = {
+			"Mason",
+			"MasonInstall",
+			"MasonUpdate",
+		},
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
@@ -135,6 +190,10 @@ require("lazy").setup({
 	{
 		"jay-babu/mason-nvim-dap.nvim",
 		event = "VeryLazy",
+		cmd = {
+			"DapContinue",
+			"DapToggleBreakpoint",
+		},
 		dependencies = { "williamboman/mason.nvim", "mfussenegger/nvim-dap" },
 		opts = {
 			handlers = {},
